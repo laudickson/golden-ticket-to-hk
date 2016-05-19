@@ -5,7 +5,6 @@
 	let request = require('request');
 	let $ = require('cheerio');
 	let WorkerProducer = require('./producer_worker');
-	let Seed = require('./seed');
 
   // Seeder
   function seed(from, to, success, failure){

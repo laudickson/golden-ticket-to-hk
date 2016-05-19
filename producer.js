@@ -1,4 +1,14 @@
-let Seed = require('./seed');
+
+function seed(from, to, success, failure){
+  this.type = 'rate'
+  this.payload = {
+    from: from,
+    to: to,
+    success: 0,
+    failure: 0
+  }
+}
+
 let ProducerWorker = require('./producer_worker');
 
 let producer_worker = new ProducerWorker({
