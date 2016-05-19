@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tsdlau/golden-ticket-to-hk.svg?branch=master)](https://travis-ci.org/tsdlau/golden-ticket-to-hk)
+
 Technologies incorporated:
 
 [beanstalkd](http://kr.github.io/beanstalkd/) via [fivebeans](https://github.com/ceejbot/fivebeans)
