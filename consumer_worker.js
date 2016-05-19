@@ -1,32 +1,29 @@
 (function() {
-	'use strict';
 
-	// Declare imports
-	var Promise = require('bluebird');
-	var Fivebeans = Promise.promisifyAll(require('fivebeans'));
-	var HandlerCurrency = require('./handler_currency');
+	let Promise = require('bluebird');
+	let Fivebeans = Promise.promisifyAll(require('fivebeans'));
+	let HandlerCurrency = require('./handler_currency');
 
 	// Constructor
-	function ConsumerWorker(config) {
-		this.host = config.host;
-		this.port = config.port;
-		this.tube_name = config.tube_name;
+	function WorkerConsumer(config) {
+		this.config = config;
 	}
 
-	ConsumerWorker.prototype.start = function() {
-		var options = {
+	WorkerConsumer.prototype.start = function() {
+		let options = {
 			id: 'SOME_RANDOM_ID',
-			host: this.host,
-			port: this.port,
+			host: this.config.host,
+			port: this.config.port,
 			handlers: {
-				currency: new HandlerCurrency()
+				rate: new ExchangeRate(this)
 			},
 			ignoreDefault: true
 		}
 
-		var worker = new Fivebeans.worker(options);
-		worker.start([this.tube_name]);
+		let worker = new Fivebeans.worker(options);
+		worker.start([this.config.tube_name]);
+		console.log('The Consumer Worker has begun its job.');
 	};
 
-	module.exports = ConsumerWorker;
+	module.exports = WorkerConsumer;
 })();
