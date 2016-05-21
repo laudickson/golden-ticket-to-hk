@@ -1,5 +1,6 @@
 'use strict';
 
+// Prepares schema
 (function () {
 	let mongoose = require('mongoose');
 	let Schema = mongoose.Schema;
@@ -9,6 +10,8 @@
 		to: String,
 		created_at: String,
 		rate: String
+  }, {
+		versionKey: false
 	});
 
 	module.exports = mongoose.model('CurrentRate', CurrentRate);

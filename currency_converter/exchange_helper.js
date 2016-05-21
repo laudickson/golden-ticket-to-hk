@@ -11,7 +11,7 @@
   let mongoHelper = require('../assets/mongo_helper');
   let RateHelper = require('./rate_helper');
   let saveToMongo = require('../assets/mongo_save')
-  let Redo = require('../assets/redo')
+  let Printer = require('../assets/printer')
 
 	const SUCCESS_MAX = 10;
 	const FAIL_MAX = 3;
@@ -19,81 +19,76 @@
 	const SUCCESS_TIMER = 60;
 	const FAILURE_TIMER = 3;
 
-	/**
-	 * Initialize the job
-	 */
-	function Exchanger(consumer_worker) {
+  // Initialize the worker
+	function ExchangeHelper(consumer_worker) {
 		this.type = 'current_rate';
 		this.worker = consumer_worker;
 	}
 
-
-	Exchanger.prototype.work = function (payload, callback) {
+	ExchangeHelper.prototype.work = function (payload, callback) {
 		let seed = new Seed(payload.from, payload.to, payload.success, payload.success);
 		let worker = this.worker;
 
 		co(function* () {
 			yield mongoHelper(worker.mongo_url);
-
 			let rate = yield RateHelper(payload.from, payload.to);
 			let data = yield saveToMongo(payload.from, payload.to, rate, new Date());
 
-			// Redo if success less than 10 times
+			// Keep cycling until 10 successive iterations
 			if (++seed.payload.success < SUCCESS_MAX) {
-				redo(worker.env, seed, SUCCESS_TIMER).then(function (job) {
-					// Get exchange rate and reput success, log it
+				cycle(worker.env, seed, SUCCESS_TIMER).then(function (job) {
+					// Print the results
 					printer({
 						payload: payload,
 						count: seed.payload.success,
 						current_rate: rate,
 						saved_data: data,
-						redo_job: job
+						job_id: job
 					});
-				}).catch(function (error_message) {
-					// Get exchange rate success and reput failure, log it
+				}).catch(function (error) {
 					printer({
 						payload: payload,
 						count: seed.payload.success,
 						current_rate: rate,
-						save: data,
-						error_message: error_message
+						saved_data: data,
+						message: error
 					});
 				});
 			} else {
-				// Get exchange rate success and job finished, log it
+				// Print end of cycle and completed results
 				printer({
 					payload: payload,
 					count: seed.payload.success,
 					current_rate: rate,
-					save: data
+					saved_data: data
 				});
 			}
 
 			callback('success');
 		}).catch(function (error) {
 			if (++seed.payload.fail < FAILURE_MAX) {
-				redo(worker.env, seed, FAILURE_TIMER).then(function (job) {
+				cycle(worker.env, seed, FAILURE_TIMER).then(function (job) {
 					printer({
 						payload: payload,
 						count: seed.payload.fail,
-						error_message: error,
-						redo_job: job
+						message: error,
+						job_id: job
 					});
-				}).catch(function (redo_error) {
-					// Get exchange rate and reput failure, log it
+				}).catch(function (rate_error) {
+					// Print failure messages
 					printer({
 						payload: payload,
 						count: seed.payload.failure,
 						rate_error: error,
-						redo_error: redo_error
+						message: rate_error
 					});
 				});
 			} else {
-				// Get exchange rate failure and give job, log it
+				// Print end of cycle and failure messages
 				printer({
 					payload: payload,
 					count: seed.payload.failure,
-					rate_err: error
+					rate_error: error
 				});
 			}
 
@@ -101,10 +96,11 @@
 		});
 	};
 
-  function redo(env, seed, delay) {
+  // Cycling iterations for the worker
+  function cycle(env, seed, delay) {
   let worker_producer = new WorkerProducer(env);
   return worker_producer.put(seed, delay);
 }
 
-module.exports = Exchanger;
+module.exports = ExchangeHelper;
 })();
