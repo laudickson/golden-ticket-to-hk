@@ -4,17 +4,17 @@
 
 	var Promise = require('bluebird');
 	var Fivebeans = Promise.promisifyAll(require('fivebeans'));
+  let co = require('co');
 
-	// Constructor
-	function ProducerWorker(config) {
-		this.config = config
+	// initialize the worker
+	function ProducerWorker(env) {
+		this.env = env
 	}
 
 	// Seed the tube first
-	ProducerWorker.prototype.put = function(seed) {
-		let client = new Fivebeans.client(this.config.host, this.config.port);
-
-		let current_tube = this.config.tube_name;
+	ProducerWorker.prototype.put = function(seed, delay) {
+		let client = new Fivebeans.client(this.env.host, this.env.port);
+		let tube_name = this.env.tube_name;
 
 		return new Promise(function (resolve, reject) {
 			client.onAsync('connect').then(function () {
@@ -25,14 +25,14 @@
 					client.end();
 					return job;
 				}).then(function (job) {
-					resolve(jobid);
-				}, function (err) {
-					reject(err);
+					resolve(job);
+				}, function (error) {
+					reject(error);
 				});
 			});
 
-			client.onAsync('error').then(function (err) {
-				reject(err);
+			client.onAsync('error').then(function (error) {
+				reject(error);
 			});
 
 			client.connect();

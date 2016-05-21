@@ -1,4 +1,6 @@
-function () {
+'use strict';
+
+(function () {
 	let mongoose = require('mongoose');
 	let Schema = mongoose.Schema;
 
@@ -10,4 +12,4 @@ function () {
 	});
 
 	module.exports = mongoose.model('CurrentRate', CurrentRate);
-}();
+})();

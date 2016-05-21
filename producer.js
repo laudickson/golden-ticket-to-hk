@@ -5,7 +5,7 @@ function seed(from, to, success, failure){
     from: from,
     to: to,
     success: 0,
-    failure: 0
+    fail: 0
   }
 }
 

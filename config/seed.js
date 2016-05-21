@@ -1,13 +1,13 @@
 'use strict';
 
 (function () {
-	function Seed(from, to, success, failure) {
+	function Seed(from, to, success, fail) {
 		this.type = 'current_rate';
 		this.payload = {
 			from: from,
 			to: to,
 			success: success || 0,
-			failure: failure || 0
+			fail: fail || 0
 		};
 	}
 

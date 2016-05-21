@@ -1,5 +1,5 @@
 let env = require('./env');
-let ConsumerWorker = require('./consumer_worker');
+let ConsumerWorker = require('./worker/consumer');
 let consumer_worker = new ConsumerWorker(env);
 
 consumer_worker.start();
