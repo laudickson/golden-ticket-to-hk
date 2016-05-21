@@ -10,39 +10,34 @@
 		this.config = config
 	}
 
-	// Function: Put a Seed on the tube
+	// Seed the tube first
 	ProducerWorker.prototype.put = function(seed) {
 		let client = new Fivebeans.client(this.config.host, this.config.port);
-		let tube_name = this.config.tube_name;
 
-		client.on('connect', function() {
+		let current_tube = this.config.tube_name;
 
-			client
-				.useAsync(tube_name)
-				.then(function(current_tube) {
-					console.log(`WorkerProducer: Use tube '${current_tube}'`);
-					return client.putAsync(0, delay, 60, JSON.stringify([tube_name, seed]))
-				})
-				.then(function(jobid) {
-					console.log(`Job Queued: ${seed.type} in '${tube_name}': ${jobid}`);
+		return new Promise(function (resolve, reject) {
+			client.onAsync('connect').then(function () {
+				co(function* () {
+					let current_tube = yield client.useAsync(tube_name);
+					// Put job into queue
+					let job = yield client.putAsync(0, delay, 60, JSON.stringify([current_tube, seed]));
 					client.end();
-				})
-				.catch(function(err) {
-					console.log(err);
-				})
+					return job;
+				}).then(function (job) {
+					resolve(jobid);
+				}, function (err) {
+					reject(err);
+				});
+			});
 
-		}).on('error', function(err) {
+			client.onAsync('error').then(function (err) {
+				reject(err);
+			});
 
-			// connection failure
-			console.log(err);
-
-		}).on('close', function() {
-
-			// underlying connection has closed
-			console.log('The Producer Worker is finished with his job.');
-
-		}).connect();
+			client.connect();
+		});
 	};
 
-	module.exports = WorkerProducer;
+	module.exports = ProducerWorker;
 })();
