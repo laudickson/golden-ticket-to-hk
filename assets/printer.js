@@ -4,7 +4,7 @@
 (function printer(option) {
   let $ = require('cheerio');
 
-  console.log('====================');
+  console.log('___________________');
   console.log(`From: '${option.payload.from}'`)
   console.log(`"To: '${option.payload.to}'"`)
 
