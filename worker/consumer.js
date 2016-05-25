@@ -1,36 +1,33 @@
 'use strict';
 
-(function() {
-
+(function () {
 	let Promise = require('bluebird');
-  let $ = require('cheerio');
 	let Fivebeans = Promise.promisifyAll(require('fivebeans'));
-	let ExchangeHelper = require('../currency_converter/exchange_helper');
+	let CurrencyExchanger = require('./../currency_converter/currency_exchanger');
 
-	// Initialize worker
-	function WorkerConsumer(env, mongo_url) {
-		this.env = env;
-    this.mongo_url = mongo_url;
+  // Initializing a worker consumer
+	function WorkerConsumer(config, mongo_uri) {
+		this.id = 'Your average worker doing its consumption',
+		this.config = config;
+		this.mongo_uri = mongo_uri;
 	}
 
-  // Worker doing the actual job
-  WorkerConsumer.prototype.start = function () {
+  // Protocol for the job
+	WorkerConsumer.prototype.start = function () {
 		let options = {
-			id: 'Just your average Consumer Worker'
-			host: this.env.host,
-			port: this.env.port,
+			id: this.id,
+			host: this.config.host,
+			port: this.config.port,
 			handlers: {
-				current_rate: new ExchangeHelper(this)
+				exchange_rate: new CurrencyExchanger(this)
 			},
 			ignoreDefault: true
 		};
 
-    // Fivebeans worker
 		let worker = new Fivebeans.worker(options);
+		worker.start([this.config.tube_name]);
 
-		worker.start([this.env.tube_name]);
-
-    console.log(`WorkingConsumer with _id: ${this.id}. The Consumer Worker has begun its job.`);
+		console.log(`A worker with _id: '${this.id}' has begun his job on the tube: '${this.config.tube_name}'`);
 	};
 
 	module.exports = WorkerConsumer;

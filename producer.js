@@ -1,18 +1,22 @@
 'use strict';
 
-let env = require('./config/env');
+let config = require('./config/env');
 let Seed = require('./config/seed');
 let WorkerProducer = require('./worker/producer');
 
+// Creating a new producer and a seed
 let worker_producer = new WorkerProducer(config);
 let seed = new Seed('HKD', 'USD', 0, 0);
 
-// Put the seed on the tube
+// Seed the beanstalk!
 worker_producer.put(seed, 0).then(function (jobid) {
-	// Put seed success
-	console.log(`WorkerProducer: Put a seed on tube tube_name: '${config.tube_name}', jobid: '${jobid}'`);
-	console.log(`WorkerProducer: Seed: ${JSON.stringify(seed)}'`);
-}).catch(function (err) {
-	// Put seed failure
-	console.log(`WorkerProducer: Error on putting seed - Error: ${err}`);
+
+  // Successful seeding
+	console.log(`The beanstalkd with tube name: '${config.tube_name} has been seeded. It's ready for consumption!`);
+	console.log(`Seed data: ${JSON.stringify(seed)}'`);
+}).catch(function (error) {
+
+  // Failed seeding
+	console.log(`There was an error in seeding the beanstalk!`);
+  console.log(`Error: ${error}`);
 });

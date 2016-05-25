@@ -1,8 +1,9 @@
 'use strict';
 
 (function () {
+
 	function Seed(from, to, success, fail) {
-		this.type = 'current_rate';
+		this.type = 'exchange_rate';
 		this.payload = {
 			from: from,
 			to: to,

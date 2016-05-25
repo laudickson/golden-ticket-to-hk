@@ -1,6 +1,9 @@
-let env = require('./env');
-let ConsumerWorker = require('./worker/consumer');
-let mongo_url = "mongodb://tsdlau:password123@ds025742.mlab.com:25742/golden-ticket"
-let consumer_worker = new ConsumerWorker(env, mongo_url);
+'use strict';
 
-consumer_worker.start();
+let mongo_uri = "mongodb://tsdlau:password123@ds025742.mlab.com:25742/golden-ticket";
+let config = require('./config/env');
+let WorkerConsumer = require('./worker/consumer');
+
+// Start a new WorkerConsumer
+let worker_consumer = new WorkerConsumer(config, mongo_uri, true);
+worker_consumer.start();
