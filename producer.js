@@ -1,22 +1,24 @@
+'use strict';
 
-function seed(from, to, success, failure){
-  this.type = 'rate'
-  this.payload = {
-    from: from,
-    to: to,
-    success: 0,
-    failure: 0
-  }
-}
+let config = require('./config/env');
+let Seed = require('./config/seed');
+let WorkerProducer = require('./worker/producer');
 
-let ProducerWorker = require('./producer_worker');
+// Creating a new producer and a seed
+let worker_producer = new WorkerProducer(config);
 
-let producer_worker = new ProducerWorker({
-  host: 'challenge.aftership.net',
-  port: 11300,
-  tube_name: 'tsdlau'
+// Change 'HKD' or 'USD' to other countries with valid country abbreviations
+let seed = new Seed('HKD', 'USD', 0, 0);
+
+// Seed the beanstalk!
+worker_producer.put(seed, 0).then(function (jobid) {
+
+  // Successful seeding
+	console.log(`The beanstalkd with tube name: '${config.tube_name} has been seeded. It's ready for consumption!`);
+	console.log(`Seed data: ${JSON.stringify(seed)}'`);
+}).catch(function (error) {
+
+  // Failed seeding
+	console.log(`There was an error in seeding the beanstalk!`);
+  console.log(`Error: ${error}`);
 });
-
-var seed = new Seed('USD', 'HKD', 0, 0);
-
-producer_worker.put(seed,0);

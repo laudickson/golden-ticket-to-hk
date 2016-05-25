@@ -1,13 +1,33 @@
-[![Build Status](https://travis-ci.org/tsdlau/golden-ticket-to-hk.svg?branch=master)](https://travis-ci.org/tsdlau/golden-ticket-to-hk)
 
 Technologies incorporated:
 
-[beanstalkd](http://kr.github.io/beanstalkd/) via [fivebeans](https://github.com/ceejbot/fivebeans)
-
-[mongoDB](https://www.mongodb.com)
-
 [Node.js](https://nodejs.org/en/) (v4.2.1)
 
-[bluebird](http://bluebirdjs.com/docs/getting-started.html)
+[beanstalkd](http://kr.github.io/beanstalkd/) via [fivebeans](https://github.com/ceejbot/fivebeans) to create workers for a beantalkd
 
-[co](https://github.com/tj/co)
+[mongoDB](https://www.mongodb.com) with [mongoose](http://mongoosejs.com) to save the data
+
+[bluebird](http://bluebirdjs.com/docs/getting-started.html) with [co](https://github.com/tj/co) to create jobs for the workers
+
+[cheerio](https://github.com/cheeriojs/cheerio) jQuery tool for Node.js
+
+[request](https://github.com/request/request) simplified HTTP request client for obtaining exchange rate
+
+This program serves as a simple currency converter using a worker to obtain and display exchange rates as a job. The worker finishes the job if:
+
+    * it successfully obtains and displays the rate 10 successful times
+
+    * or it fails to obtain and display the rate 3 times.
+
+The default exchange rate included is HKD to USD.
+
+Instructions:
+* Clone this git into a directory
+* Run `npm install`
+* Seed the beanstalk with `node producer`
+* Watch the consumer do its thing with `node consumer`
+* Cross your fingers and hope the worker successfully finishes the job
+
+Notes:
+
+You can change the rate for different countries in the `producer.js` file of the root directory
