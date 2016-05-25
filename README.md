@@ -3,7 +3,7 @@ Technologies incorporated:
 
 [Node.js](https://nodejs.org/en/) (v4.2.1)
 
-[beanstalkd](http://kr.github.io/beanstalkd/) via [fivebeans](https://github.com/ceejbot/fivebeans) to create workers for a beantalkd
+[beanstalkd](http://kr.github.io/beanstalkd/) via [fivebeans](https://github.com/ceejbot/fivebeans) to create workers for a beanstalkd
 
 [mongoDB](https://www.mongodb.com) with [mongoose](http://mongoosejs.com) to save the data
 
@@ -15,7 +15,8 @@ Technologies incorporated:
 
 This program serves as a simple currency converter using a worker to obtain and display exchange rates as a job. The worker finishes the job if:
 
-    * it successfully obtains and displays the rate 10 successful times for each minute. save the result to mongodb
+    * it successfully obtains and displays the rate 10 successful times for each minute.
+    * save the result to mongodb
 
     * or it fails to obtain and display the rate 3 times.
       * if it fails, retry it in 3 seconds
