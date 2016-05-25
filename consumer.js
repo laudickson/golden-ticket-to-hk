@@ -5,5 +5,5 @@ let config = require('./config/env');
 let WorkerConsumer = require('./worker/consumer');
 
 // Start a new WorkerConsumer
-let worker_consumer = new WorkerConsumer(config, mongo_uri, true);
+let worker_consumer = new WorkerConsumer(config, mongo_uri);
 worker_consumer.start();

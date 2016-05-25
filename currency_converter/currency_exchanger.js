@@ -13,7 +13,7 @@
   // Parameters for the job
   let success_max = 10;
 	let fail_max = 3;
-	let success_timer = 2;
+	let success_timer = 60;
 	let fail_timer = 3;
 
 	function CurrencyExchanger(worker) {
@@ -73,30 +73,30 @@
   			});
   		}));
 
-      console.log(`Input: ${JSON.stringify(payload)}`);
       console.log('====================');
+      console.log(`Input: ${JSON.stringify(payload)}`);
       console.log(`Obtaining rate for payload data...`);
 
 			if (++seed.payload.success < success_max) {
 				cycle(worker.config, seed, success_timer).then(function (job_id) {
 
           // Successful iteration
-          console.log(`...Success!`)
+          console.log(`...Success!`);
           console.log(`From: ${payload.from}`);
-          console.log(`To: ${payload.to}`)
+          console.log(`To: ${payload.to}`);
           console.log(`Current Rate: ${exchange_rate}`)
           console.log(`Saved to mongo with id: '${data[0]._id}'`);
         	console.log(`Successful iterations: ${seed.payload.success}.`);
           console.log(`Failed iterations: ${seed.payload.fail}.`);
-          console.log(`Cycling next iteration with: '${job_id}'`);
+          console.log(`Cycling next iteration with job_id: '${job_id}'`);
 				}).catch(function (error) {
 
           // Error with the actual iteration itself. Cycle the next iteration
-          console.log(`...No good!`)
-          console.log(`There was an error in the iteration: ${error}`)
+          console.log(`...No good!`);
+          console.log(`There was an error in the iteration: ${error}`);
   				console.log(`Successful iterations: ${seed.payload.success}.`);
           console.log(`Failed iterations: ${seed.payload.fail}.`);
-          console.log(`Cycling next iteration with: '${job_id}'`);
+          console.log(`Cycling next iteration with job_id: '${job_id}'`);
 				});
 			} else {
 
@@ -104,6 +104,7 @@
         console.log(`Complete Success!`);
         console.log(`Successful iterations: ${seed.payload.success}.`);
         console.log(`Failed iterations: ${seed.payload.fail}.`);
+        console.log('====================');
         console.log(`Done with the work and going home, bye!`);
 			}
 
@@ -113,7 +114,7 @@
 				cycle(worker.config, seed, fail_timer).then(function (job_id) {
 
           // Error with the obtaining of exchange rate. Cycle the next iteration
-          console.log(`...No good!`)
+          console.log(`...No good!`);
           console.log(`There was an error obtaining the rate: ${exchange_rate_error}`)
           console.log(`Successful iterations: ${seed.payload.success}.`);
           console.log(`Failed iterations: ${seed.payload.fail}.`);
@@ -121,8 +122,8 @@
 				}).catch(function (error) {
 
           // Error with the actual iteration itself. Cycle the next iteration
-          console.log(`...No good!`)
-          console.log(`There was an error in the iteration: ${error}`)
+          console.log(`...No good!`);
+          console.log(`There was an error in the iteration: ${error}`);
           console.log(`Successful iterations: ${seed.payload.success}.`);
           console.log(`Failed iterations: ${seed.payload.fail}.`);
           console.log(`Cycling next iteration with: '${job_id}'`);
@@ -130,8 +131,8 @@
 			} else {
 
         // Stop the job after 3 failed iterations
-        console.log(`...No good!`)
-        console.log(`There was an error obtaining the rate: ${exchange_rate_error}`)
+        console.log(`...No good!`);
+        console.log(`There was an error obtaining the rate: ${exchange_rate_error}`);
         console.log(`Successful iterations: ${seed.payload.success}.`);
         console.log(`Failed iterations: ${seed.payload.fail}.`);
         console.log(`Too many failures :( Going to quit the job, now. Bye!`);

@@ -1,7 +1,7 @@
 'use strict';
 
+// Seed schema
 (function () {
-
 	function Seed(from, to, success, fail) {
 		this.type = 'exchange_rate';
 		this.payload = {
